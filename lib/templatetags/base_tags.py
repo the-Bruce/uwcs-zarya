@@ -16,7 +16,12 @@ def markdownify(value):
 
 @register.simple_tag(takes_context=True)
 def is_nightmode(context):
-    user = context['request'].user
+    try:
+        user = context['request'].user
+        # Wagtail preview context doesn't have .user available
+    except AttributeError:
+        return False
+    
     try:
         if user.compsocuser:
             return user.compsocuser.nightmode_on or bool(context['request'].session.get('night_mode', default=False))
